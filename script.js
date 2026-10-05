@@ -70,7 +70,7 @@ function setAuthMode(mode){
   authMode=mode;
   const signup=mode==='signup';
   document.getElementById('authTitle').textContent=signup?'Create your account':'Welcome back';
-  document.getElementById('authSubtitle').textContent=signup?'Create a username and password to start your 92-day challenge.':'Sign in to continue your 92-day challenge.';
+  document.getElementById('authSubtitle').textContent='ENTER THE ARC, EARN THE EXIT.';
   document.getElementById('confirmPasswordLabel').hidden=!signup;
   document.getElementById('authSubmit').textContent=signup?'Create account':'Sign in';
   document.getElementById('authSwitch').textContent=signup?'Already have an account? Sign in':'New here? Create account';
