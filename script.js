@@ -2,6 +2,8 @@ const SUPABASE_URL = 'https://gejzlucmikzghyccpxub.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_CqvOKqXTSVG1xBwl7tqIVw_rBKDuKVm';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+
+
 const KEY='winterArc2026v3',START='2026-10-01',END='2026-12-31',TOTAL=92,WATER=4;
 const habits=[['workout','Workout','Warm-up • training • cool-down','◆'],['steps','5K or 10K steps','Hit your step target','↗'],['diet','Clean diet','Stay aligned with nutrition','◈'],['water','4L water','Fixed daily hydration target','◉'],['sleep','7h+ sleep','Minimum 7 hours','☾'],['learn','Read / Learn','Save a key takeaway','✦'],['alcohol','No alcohol until end','Protect the streak','○'],['distractions','No distractions','Keep attention on the mission','◎']];
 const quotes=['You do not need motivation. You need a standard.','Small promises kept daily become a different life.','Discipline today. Freedom tomorrow.','Make today’s version of you proud of tomorrow’s.','The goal is not perfection. The goal is returning to the plan.'];
