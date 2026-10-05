@@ -1,5 +1,5 @@
-const SUPABASE_URL = 'PASTE_YOUR_SUPABASE_URL_HERE';
-const SUPABASE_KEY = 'PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE';
+const SUPABASE_URL = 'https://gejzlucmikzghyccpxub.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CqvOKqXTSVG1xBwl7tqIVw_rBKDuKVm';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const KEY='winterArc2026v3',START='2026-10-01',END='2026-12-31',TOTAL=92,WATER=4;
