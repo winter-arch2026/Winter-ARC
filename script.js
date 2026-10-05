@@ -32,35 +32,7 @@ function stats(){let perfectDays=0,workouts=0,longest=0,run=0;for(let i=1;i<=TOT
 function renderHome(){const k=activeKey(),d=currentDay(),done=completion(k),pct=Math.round(done/8*100),r=rec(k),s=stats();document.getElementById('dayNo').textContent=d;document.getElementById('dateLabel').textContent=dateObj(k).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});                      document.getElementById('overallPct').textContent=pct+'%';document.getElementById('overallBar').style.width=pct+'%';document.getElementById('habitCount').textContent=done+'/8';document.getElementById('streak').textContent=s.current+' days';document.getElementById('longestStreak').textContent=s.longest;document.getElementById('daysCompleted').textContent=s.perfectDays+'/92';document.getElementById('workoutDays').textContent=s.workouts;document.getElementById('quote').textContent=quotes[(d-1)%quotes.length];document.getElementById('todaySummary').innerHTML=`<b>${done}/8 habits</b><span>Steps ${fmt(r.steps)}/${fmt(state.profile.steps)}</span><span>Water ${(r.water||0).toFixed(2)}/4L</span><span>Workout ${statusFor('workout')==='done'?'✓':'—'}</span>`;const list=document.getElementById('habitList');list.innerHTML='';habits.forEach(h=>{const st=statusFor(h[0]),e=document.createElement('div');e.className='habit '+(st==='done'?'done':'');e.innerHTML=`<div class="hicon">${h[3]}</div><div class="habit-main"><b>${h[1]}</b><small>${h[2]}</small></div><button>${st.toUpperCase()}</button>`;e.querySelector('button').onclick=()=>habitAction(h[0]);list.appendChild(e)});if(done===8&&!r.celebrated){r.celebrated=true;save();setTimeout(()=>openModal(`<span class="eyebrow">PERFECT DAY</span><h2>${'DAY '+d+' COMPLETE'} 🎉</h2><p>All 8 habits completed. Keep the streak alive 🔥</p>`),200)}}
 function habitAction(id){if(['workout','steps'].includes(id))return showScreen('workout');if(id==='water')return showScreen('water');if(id==='learn')return showScreen('learn');if(id==='diet')return showScreen('nutrition');if(id==='sleep')return enterSleep();cycleHabit(id);toast(id+' updated')}
 function enterSleep(){
-  let k=activeKey();
-  const r=rec(k);
-
-  openModal(`
-    <span class="eyebrow">MORNING CHECK-IN</span>
-    <h2>Last night's sleep</h2>
-    <p>Minimum 7 hours of sleep required.</p>
-    <label>
-      Hours slept
-      <input id="sleepModalIn" type="number" min="7" max="16" step=".25" value="${r.sleep??''}">
-    </label>
-    <button class="primary full" id="saveSleep">Save sleep</button>
-  `);
-
-  document.getElementById('saveSleep').onclick=()=>{
-    const v=Number(document.getElementById('sleepModalIn').value);
-
-    if(!Number.isFinite(v)||v<7)
-      return toast('Sleep must be at least 7 hours');
-
-    r.sleep=v;
-    r.habits.sleep='done';
-
-    save();
-    closeModal();
-    renderAll();
-    toast('Sleep saved ✓');
-  };
-}
+let k=activeKey();const r=rec(k);openModal(`<span class="eyebrow">MORNING CHECK-IN</span><h2>Last night's sleep</h2><p>Minimum 7 hours of sleep required.</p><label>Hours slept<input id="sleepModalIn" type="number" min="7" max="16" step=".25" value="${r.sleep??''}"></label><button class="primary full" id="saveSleep">Save sleep</button>`);document.getElementById('saveSleep').onclick=()=>{const v=Number(document.getElementById('sleepModalIn').value);if(!Number.isFinite(v)||v<7)return toast('Sleep must be at least 7 hours');r.sleep=v;r.habits.sleep='done';save();closeModal();renderAll();toast('Sleep saved ✓');};}
 function planForDay(){const d=currentDay(),week=Math.floor((d-1)/7),idx=(d-1)%7;const map=[0,1,2,3,0,1,3],p=JSON.parse(JSON.stringify(plans[map[idx]]));const add=Math.min(2,Math.floor(week/4));p.phase=week<4?'FOUNDATION':week<8?'BUILD':'FINISH STRONG';p.items=p.items.map(x=>[x[0],x[1].replace(/^3 ×/,`${3+add} ×`)]);return p}
 function videoLink(name){return 'https://www.youtube.com/results?search_query='+encodeURIComponent(name+' correct form tutorial')}
 function renderWorkout(){const p=planForDay(),r=rec(),section=(title,key,items)=>`<div class="workout-section"><h4>${title}</h4>${items.map((x,i)=>`<div class="exercise"><div><b>${x[0]}</b><br><small>${x[1]}</small> · <a href="${videoLink(x[0])}" target="_blank" rel="noopener">How to do ↗</a></div><button class="check ${r.workout[key][i]?'on':''}" data-sec="${key}" data-ex="${i}">${r.workout[key][i]?'✓':'+'}</button></div>`).join('')}</div>`;document.getElementById('workoutBox').innerHTML=`<div class="workout-card"><span class="eyebrow">${p.phase} • DAY ${currentDay()}</span><h3>${p.name}</h3><p>${p.focus}</p>${section('1. PRE-WORKOUT WARM-UP','warm',warm)}${section('2. MAIN WORKOUT','main',p.items)}${section('3. POST-WORKOUT COOL-DOWN','cool',cool)}<button id="completeWorkout" class="primary full">${r.workout.complete?'Workout completed ✓':'Complete all sections'}</button></div>`;document.querySelectorAll('[data-sec]').forEach(b=>b.onclick=()=>{r.workout[b.dataset.sec][b.dataset.ex]=!r.workout[b.dataset.sec][b.dataset.ex];save();renderWorkout()});document.getElementById('completeWorkout').onclick=()=>{const all=[...Object.values(r.workout.warm),...Object.values(r.workout.main),...Object.values(r.workout.cool)].filter(Boolean).length;const need=warm.length+p.items.length+cool.length;if(all<need)return toast(`Complete all ${need} items first`);r.workout.complete=true;r.habits.workout='done';save();renderAll();toast('Workout complete!')};const target=state.profile.steps,steps=r.steps||0,pct=clamp(Math.round(steps/target*100),0,100);document.getElementById('stepTargetLabel').textContent=fmt(target)+' steps';document.getElementById('stepProgressText').textContent=`${fmt(steps)} / ${fmt(target)}`;document.getElementById('stepsRemaining').textContent=`${fmt(Math.max(0,target-steps))} remaining`;document.getElementById('stepPct').textContent=pct+'%';document.getElementById('stepRing').style.setProperty('--p',pct+'%');document.getElementById('stepsInput').value='';renderLog('stepLog',r.stepLog,'steps')}
